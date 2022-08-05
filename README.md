@@ -1,7 +1,4 @@
 # CredentialsUtility
 
-This utility was developed to facitliate the onboaridng of new employees.
+This application automates account creation across several services and products used by the organization. 
 
-Funcitons:
-This utility will perform the following actions.
-1. 
