@@ -29,7 +29,7 @@ from selenium.webdriver.chrome.options import Options
 
 from configparser import ConfigParser
 import sys
-
+"""Status"""
 def update_block():
     try:
         if not os.path.exists(r'info\versioninfo.ini'):
