@@ -29,7 +29,7 @@ from selenium.webdriver.chrome.options import Options
 
 from configparser import ConfigParser
 import sys
-"""Status"""
+
 def update_block():
     try:
         if not os.path.exists(r'info\versioninfo.ini'):
@@ -400,6 +400,7 @@ class S4CredutiluiApp:
         self.mainwindow.mainloop()
   
     def state_toggle(self, state_new):
+        """"Disables or enables all user Intractable tkinter elements based on """
         self.unlock_btn.config(state=state_new)
         self.generate_doc_btn.config(state=state_new)
         self.doc_name_entry.config(state=state_new)
@@ -422,6 +423,7 @@ class S4CredutiluiApp:
 
 
     def run_all_window(self):
+        """Feature disabled"""
         pass
         # self.Run_all_window = tk.Toplevel()
         # self.labelframe2 = ttk.Labelframe(self.Run_all_window)
@@ -475,6 +477,7 @@ class S4CredutiluiApp:
     global default_groups
     default_groups = None
     def add_dist_window(self):
+        """Creates new toplevel window for adding distribution groups to O365 user account."""
         global default_groups
         if any(n in self.email_str.get().strip() for n in [" ","`", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "–", "_", "=", "+", "[", "]", "{", "}", "\\", "|", ";", ":", "‘", "“", ",", "/", "<", ">", "?"]):
             messagebox.showerror('Warning','Please ensure that the email provided is valid')
@@ -593,6 +596,7 @@ class S4CredutiluiApp:
         self.ad_ch_btn_var.set(1)
         
     def unlock_function(self):
+        """Unlocks tkinter user first/last name entry boxes"""
         self.state_toggle("disabled")
         self.user_role_box.config(state='disabled')
         self.lock_btn.config(state="enabled")
@@ -601,6 +605,7 @@ class S4CredutiluiApp:
         self.print_console(message=f'User information unlocked>>>', tag='yellow')
         
     def lock_function(self):
+        """Locks tkinter user first/last name entry boxes"""
         if self.last_name_entry.get() == 'Last' or self.first_name_entry.get() == 'First' or len(self.last_name_entry.get()) == 0 or len(self.first_name_entry.get()) == 0:
             messagebox.showwarning('Warning','Please enter a valid first and last name.')
             return
@@ -636,6 +641,7 @@ class S4CredutiluiApp:
             self.lock_btn.config(state="disabled")
 
     def gen_credentials(self, first_name_raw, last_name_raw):
+        """Generates credentials based on users first and last name"""
         global first_name, last_name, display_name, nav_user, accpac_user, password, domain_user, email, wims_user, file_name
         first_name = first_name_raw
         last_name = last_name_raw
@@ -649,10 +655,12 @@ class S4CredutiluiApp:
         file_name = f"{first_name} {last_name}.docx"
         
     def clear_entry(self):
+        """Clears first name and last name entry boxes"""
         self.first_name_entry.delete(0, 'end')
         self.last_name_entry.delete(0, "end")
     
     def generate_doc_function(self):
+        """Generates a credentials document using a predefined jinja2 template and attempts to save it to the designated directory."""
         if any(n in self.doc_title_str.get().strip() for n in ["<",'>',":","\\","/","|","?","*"]):
             messagebox.showerror("Error","A file name can't contain any of the following characters:\n< > : \ / | ? *")
             return
@@ -697,6 +705,7 @@ class S4CredutiluiApp:
         self.state_toggle("enabled")
 
     def open_doc_func(self):
+        """Opens the generated credentials document"""
         file_title = self.doc_title_str.get().strip()
         
         try:
@@ -711,12 +720,14 @@ class S4CredutiluiApp:
                 messagebox.showerror('Error', f'The file could not be opened, please refer to the below error:\n\n{e}')
                 
     def powershell_sp(self, args):
+        """Passes commands (args) to subprocess.Popen."""
         self.state_toggle("disabled")
         for i in args:
             self.print_console(f'{i[0]}', "yellow")
             self.print_console(f'Command:\n{i[1]}', "yellow")
             try:
                 def stream_process(proc):
+                    """Allows for subprocess stdout and stderr to be captured then displayed on the pseudo console."""
                     go = proc.poll() is None
                     if not proc.stdout == '' or None:
                         self.print_console(proc.stdout,'')
@@ -744,11 +755,12 @@ class S4CredutiluiApp:
        
 
     def powershell_function(self, input):
+        """Starts subprocess thread"""
         start_thread=threading.Thread(target=self.powershell_sp, args=[input])
         start_thread.start() 
         
     def print_console(self, message, tag):
-        
+        """Prints arguments to the pseudo console"""
         self.console_display.configure(state='normal')
         # self.console_display.insert('end', '\n', tag)
         for line in message:
@@ -764,6 +776,7 @@ class S4CredutiluiApp:
        
         
     def run_all_command(self):
+        """This feature has been deprecated"""
         pass
         summary = []
         self.state_toggle("disabled")
@@ -824,10 +837,12 @@ class S4CredutiluiApp:
     
 
     def run_all_function(self):
-        start_thread=threading.Thread(target=self.run_all_command)
-        start_thread.start() 
+        pass
+        # start_thread=threading.Thread(target=self.run_all_command)
+        # start_thread.start()
     
     def clear_function(self):
+        """Clears the pseudo-console"""
         self.console_display.configure(state='normal')
         self.console_display.delete(1.0,'end')
         self.print_console(message='Ready>>>', tag='')
@@ -835,6 +850,7 @@ class S4CredutiluiApp:
         
     
     def validate_ou(self):
+        """Validates active directory credentials before passing them to the powershell_function"""
         if not self.ou_container.get() in ['OU1','OU2','OU3']:
             messagebox.showerror('Warning','Please select one of the OU Containers and try again')
             
@@ -847,7 +863,7 @@ class S4CredutiluiApp:
 
 # ('Adding User to ActiveDirectory groups...',f'get-aduser -Identity TemplateUser -properties memberof -Verbose | Select-Object -ExpandProperty memberof -Verbose |  Add-ADGroupMember -Members {self.ad_user_str.get().strip().lower()} -Verbose')
     def validate_email(self):
-        
+        """Validates O365 email credentials before passing them to the powershell_function"""
         if any(n in self.email_str.get().strip() for n in [" ","`", "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "–", "_", "=", "+", "[", "]", "{", "}", "\\", "|", ";", ":", "‘", "“", ",", "/", "<", ">", "?"]):
             messagebox.showerror('Warning','Please ensure that the email provided is valid')
             
@@ -857,6 +873,7 @@ class S4CredutiluiApp:
             ])
         
     def add_dist_group(self):
+        """Iterates through all supplied distribution groups and dynamically generates a ppowershell command to be sent to the powershell_function(). """
         global default_groups
         dist_cmd = []
         default_groups = []
@@ -883,6 +900,7 @@ class S4CredutiluiApp:
         start_thread.start() 
         
     def dsx_function(self):
+        """Creates new toplevel window asking for DSX admin credentials to be used to login durring user account creation."""
         def login_tk_dsx():
             global admin_pass_dsx, admin_user_dsx
             admin_pass_dsx = self.admin_dsx_password.get()
@@ -936,7 +954,7 @@ class S4CredutiluiApp:
     admin_user_dsx = None
     admin_pass_dsx = None   
     def dsx_user(self):
-        
+        """Launches selenium webdriver and creates a DSX user account based on the provided credentials"""
         global admin_user_dsx, admin_pass_dsx
         # options = Options()
         if admin_user_dsx == '' and admin_pass_dsx == '':
@@ -1056,6 +1074,7 @@ class S4CredutiluiApp:
             start_thread.start()   
     
     def nav_function(self):
+
         def login_tk():
             global admin_pass, admin_user
             admin_pass = self.admin_nav_password.get()
@@ -1109,6 +1128,7 @@ class S4CredutiluiApp:
     admin_user = None
     admin_pass = None             
     def nav_user(self):
+        """Launches selenium webdriver and creates a NAV user account based on the provided credentials"""
         global admin_user, admin_pass
         # options = Options()
         if admin_pass == '' and admin_user == '':
@@ -1241,6 +1261,7 @@ class S4CredutiluiApp:
             messagebox.showerror('Error', f'The user account was not created')
 
     def export_function(self):
+        """Exports all text within the console window to a .txt file for latter review."""
         log_path = filedialog.asksaveasfile(mode='w', defaultextension=".txt")
         if log_path is None: 
             return
@@ -1270,7 +1291,7 @@ class S4CredutiluiApp:
             self.Main_window.focus()
     
     def setup(self):
-        
+        """Installs all required powershell dependencies upon initial application launch or if setup.ini file is not found."""
         if not os.path.exists(r'info\setup.ini'):
             resp = messagebox.askyesnocancel('Setup','Setup file not found; you will need to install all required dependencies if not already installed. If yes, make sure the application is launched with administrative privileges.\n\nPress “cancel” to close the application and relaunch with the correct user account control level.')
             if resp == True:
